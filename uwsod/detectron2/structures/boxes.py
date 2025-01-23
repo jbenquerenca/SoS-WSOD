@@ -221,7 +221,7 @@ class Boxes:
         """
         boxes = self.tensor.data.numpy()
         v = np.array([1, 1e3, 1e6, 1e9])
-        hashes = np.round(boxes * scale).dot(v).astype(np.int)
+        hashes = np.round(boxes * scale).dot(v).astype(int)
         _, index = np.unique(hashes, return_index=True)
         return np.sort(index)
 

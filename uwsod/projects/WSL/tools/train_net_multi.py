@@ -45,6 +45,7 @@ from detectron2.evaluation import (
     LVISEvaluator,
     PascalVOCDetectionEvaluator,
     SemSegEvaluator,
+    PedestrianDetectionEvaluator,
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
@@ -236,6 +237,8 @@ class Trainer(DefaultTrainer):
             )
         elif evaluator_type == "lvis":
             return LVISEvaluator(dataset_name, cfg, True, output_folder)
+        elif evaluator_type == "pedestrian":
+            return PedestrianDetectionEvaluator(dataset_name, True, output_folder)
         if len(evaluator_list) == 0:
             raise NotImplementedError(
                 "no Evaluator for the dataset {} with the type {}".format(
