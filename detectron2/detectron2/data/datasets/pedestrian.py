@@ -27,7 +27,41 @@ def load_pedestrian_instances(dirname: str, split: str):
         dicts.append(r)
     return dicts
 
+def load_pedestrian_instances_wsl(dirname: str, split: str):
+    with open(os.path.join(dirname, "pseudo-labels", f"{split}.json")) as f: annotations_wsl = json.load(f)
+    with open(os.path.join(dirname, "annotations", f"{split}.json")) as f: imgs_info = {i["id"]:i for i in json.load(f)["images"]}
+    dicts = list()
+    for im_id, anns in annotations_wsl.items():
+        im_info = imgs_info[im_id]
+        dicts.append({
+            "file_name": os.path.join(dirname, "images", im_info["file_name"]),
+            "image_id": im_info["id"], "height": im_info["height"], "width": im_info["width"],
+            "annotations": [{"category_id": 0, "bbox": ann["bbox"], "bbox_mode": BoxMode.XYWH_ABS} for ann in anns]}) 
+    return dicts
+
+def load_pedestrian_instances(dirname: str, split: str):
+    annotations, dicts = read_image_info_and_annotations(os.path.join(dirname, "annotations", f"{split}.json")), list()
+    for img_dict in annotations.values():
+        r = {
+            "file_name": os.path.join(dirname, "images", img_dict["img_info"]["file_name"]),
+            "image_id": img_dict["img_info"]["id"],
+            "height": img_dict["img_info"]["height"],
+            "width": img_dict["img_info"]["width"],
+            "annotations": list()
+        } 
+
+        for instance in img_dict["instances"]:
+            if ("ignore" in instance and not instance["ignore"]) or (not instance["iscrowd"]):
+                r["annotations"].append({"category_id": 0, "bbox": instance["bbox"], "bbox_mode": BoxMode.XYWH_ABS})
+        
+        dicts.append(r)
+    return dicts
+
 def register_pedestrian_dataset(name, dirname, split):
+    DatasetCatalog.register(name, lambda: load_pedestrian_instances(dirname, split))
+    MetadataCatalog.get(name).set(thing_classes=["pedestrian", "_background"], dirname=dirname, split=split)
+
+def register_pedestrian_dataset_wsl(name, dirname, split):
     DatasetCatalog.register(name, lambda: load_pedestrian_instances(dirname, split))
     MetadataCatalog.get(name).set(thing_classes=["pedestrian", "_background"], dirname=dirname, split=split)
 
@@ -42,6 +76,12 @@ def register_all_pedestrian_datasets(root):
     ]
     for name, dirname, split in SPLITS:
         register_pedestrian_dataset(name, os.path.join(root, dirname), split),
+        MetadataCatalog.get(name).evaluator_type = "pedestrian"
+    SPLITS = [
+        ("caltech_pedestrians_train_wsl",    "Caltech_Pedestrians",    "train"),
+    ]
+    for name, dirname, split in SPLITS:
+        register_pedestrian_dataset_wsl(name, os.path.join(root, dirname), split),
         MetadataCatalog.get(name).evaluator_type = "pedestrian"
 
 _root = os.getenv("DETECTRON2_DATASETS", "datasets")

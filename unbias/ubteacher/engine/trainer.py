@@ -14,7 +14,7 @@ from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.engine import DefaultTrainer, SimpleTrainer, TrainerBase
 from detectron2.engine.train_loop import AMPTrainer
 from detectron2.utils.events import EventStorage
-from detectron2.evaluation import COCOEvaluator, verify_results, PascalVOCDetectionEvaluator
+from detectron2.evaluation import COCOEvaluator, verify_results, PascalVOCDetectionEvaluator, PedestrianDetectionEvaluator
 from detectron2.data.dataset_mapper import DatasetMapper
 from detectron2.engine import hooks
 from detectron2.structures.boxes import Boxes
@@ -137,6 +137,8 @@ class BaselineTrainer(DefaultTrainer):
             return COCOEvaluator(dataset_name, cfg, True, output_folder)
         elif cfg.TEST.EVALUATOR == "VOCeval":
             return PascalVOCDetectionEvaluator(dataset_name)
+        elif cfg.TEST.EVALUATOR == "PedestrianEval":
+            return PedestrianDetectionEvaluator(dataset_name)
         else:
             raise ValueError("Unknown test evaluator.")
 
@@ -318,6 +320,8 @@ class UBTeacherTrainer(DefaultTrainer):
             return COCOEvaluator(dataset_name, cfg, True, output_folder)
         elif cfg.TEST.EVALUATOR == "VOCeval":
             return PascalVOCDetectionEvaluator(dataset_name)
+        elif cfg.TEST.EVALUATOR == "PedestrianEval":
+            return PedestrianDetectionEvaluator(dataset_name)
         else:
             raise ValueError("Unknown test evaluator.")
 
