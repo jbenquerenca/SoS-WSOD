@@ -1,6 +1,6 @@
 _BASE_: "../Base-RCNN-DilatedC5.yaml"
 MODEL:
-  WEIGHTS: "output/Caltech_Pedestrians/model_0089999.pth" # "models/VGG/VGG_ILSVRC_16_layers_v1_d2.pkl"
+  WEIGHTS: "output/TJU-Pedestrian-Traffic/model_final.pth" # "models/VGG/VGG_ILSVRC_16_layers_v1_d2.pkl"
   PIXEL_MEAN: [103.939, 116.779, 123.68]
   MASK_ON: False
   LOAD_PROPOSALS: True
