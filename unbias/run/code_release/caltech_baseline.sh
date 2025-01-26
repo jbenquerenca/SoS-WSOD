@@ -3,4 +3,4 @@ python train_net.py \
 --config configs/code_release/caltech_baseline.yaml \
 --dist-url tcp://0.0.0.0:21727 \
 OUTPUT_DIR ./output/caltech_baseline \
-SOLVER.BASE_LR 0.01 SOLVER.IMG_PER_BATCH_LABEL 1 SOLVER.IMG_PER_BATCH_UNLABEL 1 TEST.VAL_LOSS False
+SOLVER.BASE_LR 0.005 SOLVER.IMG_PER_BATCH_LABEL 8 SOLVER.IMG_PER_BATCH_UNLABEL 8 TEST.VAL_LOSS False

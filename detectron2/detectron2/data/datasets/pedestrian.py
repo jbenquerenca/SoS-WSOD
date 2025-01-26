@@ -28,15 +28,18 @@ def load_pedestrian_instances(dirname: str, split: str):
     return dicts
 
 def load_pedestrian_instances_wsl(dirname: str, split: str):
-    with open(os.path.join(dirname, "pseudo-labels", f"{split}.json")) as f: annotations_wsl = json.load(f)
+    with open(os.path.join(dirname, "pseudo_labels", "oicr_plus_caltech_pedestrians_train_wsl.json")) as f: annotations_wsl = json.load(f)
     with open(os.path.join(dirname, "annotations", f"{split}.json")) as f: imgs_info = {i["id"]:i for i in json.load(f)["images"]}
+    multi_class_labels = None
+    if "multi_label" in annotations_wsl: multi_class_labels = annotations_wsl.pop("multi_label")
     dicts = list()
     for im_id, anns in annotations_wsl.items():
-        im_info = imgs_info[im_id]
+        im_info = imgs_info[int(im_id)]
         dicts.append({
             "file_name": os.path.join(dirname, "images", im_info["file_name"]),
             "image_id": im_info["id"], "height": im_info["height"], "width": im_info["width"],
-            "annotations": [{"category_id": 0, "bbox": ann["bbox"], "bbox_mode": BoxMode.XYWH_ABS} for ann in anns]}) 
+            "annotations": [{"category_id": 0, "bbox": ann["bbox"], "bbox_mode": BoxMode.XYWH_ABS} for ann in anns],
+            "multi_label": multi_class_labels[str(int(im_info["id"]))] if multi_class_labels is not None else None}) 
     return dicts
 
 def load_pedestrian_instances(dirname: str, split: str):
@@ -62,26 +65,22 @@ def register_pedestrian_dataset(name, dirname, split):
     MetadataCatalog.get(name).set(thing_classes=["pedestrian", "_background"], dirname=dirname, split=split)
 
 def register_pedestrian_dataset_wsl(name, dirname, split):
-    DatasetCatalog.register(name, lambda: load_pedestrian_instances(dirname, split))
+    DatasetCatalog.register(name, lambda: load_pedestrian_instances_wsl(dirname, split))
     MetadataCatalog.get(name).set(thing_classes=["pedestrian", "_background"], dirname=dirname, split=split)
 
 def register_all_pedestrian_datasets(root):
     SPLITS = [
-        ("caltech_pedestrians_train",    "Caltech_Pedestrians",    "train"),
-        ("caltech_pedestrians_val",      "Caltech_Pedestrians",    "val"),
-        ("caltech_pedestrians_test",     "Caltech_Pedestrians",    "test"),
-        ("tju-pedestrian-traffic_train", "TJU-Pedestrian-Traffic", "train"),
-        ("tju-pedestrian-traffic_val",   "TJU-Pedestrian-Traffic", "val"),
-        ("tju-pedestrian-traffic_test",  "TJU-Pedestrian-Traffic", "test"),
-    ]
-    for name, dirname, split in SPLITS:
-        register_pedestrian_dataset(name, os.path.join(root, dirname), split),
-        MetadataCatalog.get(name).evaluator_type = "pedestrian"
-    SPLITS = [
         ("caltech_pedestrians_train_wsl",    "Caltech_Pedestrians",    "train"),
+        ("caltech_pedestrians_train",        "Caltech_Pedestrians",    "train"),
+        ("caltech_pedestrians_val",          "Caltech_Pedestrians",    "val"),
+        ("caltech_pedestrians_test",         "Caltech_Pedestrians",    "test"),
+        ("tju-pedestrian-traffic_train",     "TJU-Pedestrian-Traffic", "train"),
+        ("tju-pedestrian-traffic_val",       "TJU-Pedestrian-Traffic", "val"),
+        ("tju-pedestrian-traffic_test",      "TJU-Pedestrian-Traffic", "test"),
     ]
     for name, dirname, split in SPLITS:
-        register_pedestrian_dataset_wsl(name, os.path.join(root, dirname), split),
+        if "wsl" in name: register_pedestrian_dataset_wsl(name, os.path.join(root, dirname), split),
+        else: register_pedestrian_dataset(name, os.path.join(root, dirname), split),
         MetadataCatalog.get(name).evaluator_type = "pedestrian"
 
 _root = os.getenv("DETECTRON2_DATASETS", "datasets")

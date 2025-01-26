@@ -8,7 +8,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser("Adding multi-label messages into pseudo label files.")
     parser.add_argument("--pgt-temp", default="unbias/datasets/VOC2007/pseudo_labels/oicr_plus_voc_2007_{}.json")
-    parser.add_argument("--dataset", default="voc2007", choices=('voc2007', 'voc2012', 'coco'))
+    parser.add_argument("--dataset", default="voc2007", choices=('voc2007', 'voc2012', 'coco', 'caltech'))
     args = parser.parse_args()
     return args
 
@@ -42,6 +42,17 @@ def get_multi_class_label_coco(dataset):
                 label.append(cat_id)
         multi_class_label[img_id] = label
     return multi_class_label
+
+def add_caltech(pgt_temp):
+    os.chdir("unbias/")
+    trainset = get_detection_dataset_dicts(('caltech_pedestrians_train', ))
+    os.chdir("../")
+    train_pgt = json.load(open(pgt_temp.format("train"), "r"))
+
+    train_multi_class_label = get_multi_class_label(trainset)
+
+    train_pgt["multi_label"] = train_multi_class_label
+    json.dump(train_pgt, open(pgt_temp.format("train"), "w"))
 
 def add_voc07(pgt_temp):
     os.chdir("unbias/")
@@ -112,6 +123,8 @@ def main():
         add_voc07(pgt_temp)
     elif dataset == "voc2012":
         add_voc12(pgt_temp)
+    elif dataset == "caltech":
+        add_caltech(pgt_temp)
     else:
         raise ValueError(f"{dataset} is not supported.")
 
