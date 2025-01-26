@@ -25,7 +25,7 @@ def parse_args():
 def pgf_dhd_traffic(det_path, save_path, prefix, t_con, t_keep, use_diff):
     print("loading dhd_traffic datasets...")
     os.chdir("uwsod/")
-    trainset = get_detection_dataset_dicts((f'dhd_traffic_train',))
+    trainset = get_detection_dataset_dicts((f'tju-pedestrian-traffic_train',))
     os.chdir("../")
 
     print("loading voc detection results...")
@@ -33,7 +33,6 @@ def pgf_dhd_traffic(det_path, save_path, prefix, t_con, t_keep, use_diff):
 
     # image_id 2 anns
     train_gt_anns = {}
-    val_gt_anns = {}
     for i in range(len(trainset)):
         message = trainset[i]
         image_id = message["image_id"]
@@ -416,6 +415,8 @@ def main():
     elif "voc" in dataset:
         year = dataset[3:]
         pgf_voc(det_path, save_path, prefix, t_con, t_keep, use_diff, year)
+    elif "dhd_traffic":
+        pgf_dhd_traffic(det_path, save_path, prefix, t_con, t_keep, use_diff)
     elif "Caltech":
         pgf_caltech(det_path, save_path, prefix, t_con, t_keep, use_diff)
     else:
