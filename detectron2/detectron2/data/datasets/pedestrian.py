@@ -2,6 +2,8 @@ import json, os
 from collections import defaultdict
 from detectron2.structures import BoxMode
 from detectron2.data import MetadataCatalog, DatasetCatalog
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def read_image_info_and_annotations(annotation_path):
     annotations_json, annotations = json.load(open(annotation_path)), defaultdict(dict)

@@ -406,7 +406,10 @@ class COCOeval:
                     except:
                         pass
                     pi = inds[-1]
-                    precision_cut = tp[pi]/(tp[pi]+fp[pi])
+                    try:
+                        precision_cut = tp[pi]/(tp[pi]+fp[pi])
+                    except:
+                        precision_cut = 0.
                     # print("Pcut: ", precision_cut)
                     ys[t,:,k,m] = np.array(q).clip(0, 1-1e-6)
                     # print(ys[t,:,k,m])
