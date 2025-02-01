@@ -324,51 +324,56 @@ class OICRPlusHeads(ROIHeads):
 
             
             proposals_k1 = self.label_and_sample_proposals(proposals1, targets1, suffix=suffix)
-            proposals_k1_flip = [
-                Instances(
-                    proposal.image_size,
-                    proposal_boxes = proposal.proposal_boxes,
-                    objectness_logits = proposal.objectness_logits,
-                    gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
-                    gt_classes = proposal_gt.gt_classes.clone(),
-                    gt_scores = proposal_gt.gt_scores.clone(),
-                    gt_weights = proposal_gt.gt_weights.clone(),
-                    gt_index = proposal_gt.gt_index.clone()
-                )
-                for i, (proposal_gt, proposal) in enumerate(
-                    zip(proposals_k1, proposals1_flip)
-                )
-            ]
-            proposals_k2 = [
-                Instances(
-                    proposal.image_size,
-                    proposal_boxes = proposal.proposal_boxes,
-                    objectness_logits = proposal.objectness_logits,
-                    gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
-                    gt_classes = proposal_gt.gt_classes.clone(),
-                    gt_scores = proposal_gt.gt_scores.clone(),
-                    gt_weights = proposal_gt.gt_weights.clone(),
-                    gt_index = proposal_gt.gt_index.clone()
-                )
-                for i, (proposal_gt, proposal) in enumerate(
-                    zip(proposals_k1, proposals2)
-                )
-            ]
-            proposals_k2_flip = [
-                Instances(
-                    proposal.image_size,
-                    proposal_boxes = proposal.proposal_boxes,
-                    objectness_logits = proposal.objectness_logits,
-                    gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
-                    gt_classes = proposal_gt.gt_classes.clone(),
-                    gt_scores = proposal_gt.gt_scores.clone(),
-                    gt_weights = proposal_gt.gt_weights.clone(),
-                    gt_index = proposal_gt.gt_index.clone()
-                )
-                for i, (proposal_gt, proposal) in enumerate(
-                    zip(proposals_k1, proposals2_flip)
-                )
-            ]
+            try:
+                proposals_k1_flip = [
+                    Instances(
+                        proposal.image_size,
+                        proposal_boxes = proposal.proposal_boxes,
+                        objectness_logits = proposal.objectness_logits,
+                        gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
+                        gt_classes = proposal_gt.gt_classes.clone(),
+                        gt_scores = proposal_gt.gt_scores.clone(),
+                        gt_weights = proposal_gt.gt_weights.clone(),
+                        gt_index = proposal_gt.gt_index.clone()
+                    )
+                    for i, (proposal_gt, proposal) in enumerate(
+                        zip(proposals_k1, proposals1_flip)
+                    )
+                ]
+                proposals_k2 = [
+                    Instances(
+                        proposal.image_size,
+                        proposal_boxes = proposal.proposal_boxes,
+                        objectness_logits = proposal.objectness_logits,
+                        gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
+                        gt_classes = proposal_gt.gt_classes.clone(),
+                        gt_scores = proposal_gt.gt_scores.clone(),
+                        gt_weights = proposal_gt.gt_weights.clone(),
+                        gt_index = proposal_gt.gt_index.clone()
+                    )
+                    for i, (proposal_gt, proposal) in enumerate(
+                        zip(proposals_k1, proposals2)
+                    )
+                ]
+                proposals_k2_flip = [
+                    Instances(
+                        proposal.image_size,
+                        proposal_boxes = proposal.proposal_boxes,
+                        objectness_logits = proposal.objectness_logits,
+                        gt_boxes = proposal.proposal_boxes.clone()[proposal_gt.gt_index],
+                        gt_classes = proposal_gt.gt_classes.clone(),
+                        gt_scores = proposal_gt.gt_scores.clone(),
+                        gt_weights = proposal_gt.gt_weights.clone(),
+                        gt_index = proposal_gt.gt_index.clone()
+                    )
+                    for i, (proposal_gt, proposal) in enumerate(
+                        zip(proposals_k1, proposals2_flip)
+                    )
+                ]
+            except:
+                proposals_k1_flip = proposals_k1
+                proposals_k2 = proposals_k1
+                proposals_k2_flip = proposals_k1
 
             predictions_k1 = self.box_refinery[k](box_features_new1)
             predictions_k1_flip = self.box_refinery[k](box_features_new1_flip)
@@ -424,6 +429,7 @@ class OICRPlusHeads(ROIHeads):
                 prev_pred_boxes2 = [box.detach() for box in prev_pred_boxes2]
                 prev_pred_boxes2_flip = [box.detach() for box in prev_pred_boxes2_flip] 
 
+            print(losses)
 
             losses.update(losses_oicr)
 

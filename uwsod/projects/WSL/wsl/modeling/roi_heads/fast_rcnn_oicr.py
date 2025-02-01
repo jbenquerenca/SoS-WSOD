@@ -216,7 +216,10 @@ class OICROutputs(object):
         self._no_instances = len(proposals) == 0  # no instances found
 
         self.mean_loss = mean_loss
-        self.proposal_weights = torch.cat([p.gt_weights for p in proposals], dim=0)
+        # self.proposal_weights = torch.cat([p.gt_weights for p in proposals], dim=0)
+        self.proposal_weights = torch.cat(
+            [p.gt_weights if "gt_weights" in p.get_fields().keys() else torch.ones(len(p.gt_boxes), dtype=torch.float).to(p.gt_boxes.device) 
+             for p in proposals], dim=0)
         self.proposal_weights[self.gt_classes == -1] = 0.0
 
         self.valid_weights = torch.zeros_like(self.proposal_weights)

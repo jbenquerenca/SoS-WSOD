@@ -119,14 +119,15 @@ class Trainer(DefaultTrainer):
         """
         If your want to do something with the data, you can wrap the dataloader.
         """
-        while True:
-            data = next(self._data_loader_iter)
+        # while True:
+        data = next(self._data_loader_iter)
+        print(f'{data[0]["instances1"]=}')
             # 测试用
             # print(len(data), torch.zeros(1).cuda(), data[0]["file_name"])
             # print(data)
-            if all([len(x["instances1"]) > 0 for x in data]):
-            # if all([len(x["instances1"]) > 0 for x in data]) and all([len(x["instances1_flip"]) > 0 for x in data]) and all([len(x["instances2"]) > 0 for x in data]) and all([len(x["instances2_flip"]) > 0 for x in data]):
-                break
+            # if all([len(x["instances1"]) > 0 for x in data]):
+            # # if all([len(x["instances1"]) > 0 for x in data]) and all([len(x["instances1_flip"]) > 0 for x in data]) and all([len(x["instances2"]) > 0 for x in data]) and all([len(x["instances2_flip"]) > 0 for x in data]):
+            #     break
         data_time = time.perf_counter() - start
         # 测试用, 看 dataloader 好用不
         # print(data[0]["proposals1"])

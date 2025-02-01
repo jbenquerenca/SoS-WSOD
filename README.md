@@ -46,12 +46,10 @@ python3 -m pip install -v -e .
 # install wsl
 cd projects/WSL
 
-pip install git+https://github.com/lucasb-eyer/pydensecrf.git
-pip install opencv-python scikit-learn shapely
-pip install git+https://github.com/cocodataset/panopticapi.git
+pip install git+https://github.com/lucasb-eyer/pydensecrf.git git+https://github.com/cocodataset/panopticapi.git opencv-python scikit-learn shapely
 
 git submodule update --init --recursive
-git clone https://github.com/torch/torch7 && mkdir th_build && cd th_build && cmake ../torch7/lib/TH && make && make install && rm -rf th_build torch7
+git clone https://github.com/torch/torch7 && mkdir th_build && cd th_build && cmake ../torch7/lib/TH && make && make install && cd .. && rm -rf th_build torch7
 python3 -m pip install -v -e .
 ```
 
